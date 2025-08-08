@@ -3368,21 +3368,12 @@ The sending node:
       - MUST NOT set `your_last_funding_locked`.
     - if a splice transaction reached acceptable depth while disconnected:
       - MUST set `my_current_funding_locked` to the txid of the latest such transaction.
-      - MUST send `splice_locked` for that transaction after exchanging `channel_reestablish`.
     - otherwise:
       - MUST set `my_current_funding_locked` to the txid of the last `splice_locked` it sent.
       - if it never sent `splice_locked` for any transaction, but it sent `channel_ready`:
         - MUST set `my_current_funding_locked` to the txid of the channel funding transaction.
       - otherwise (it has never sent `channel_ready` or `splice_locked`):
         - MUST NOT set `my_current_funding_locked`.
-      - if `my_current_funding_locked` is included:
-        - if `announce_channel` is set for this channel:
-          - if it has not received `announcement_signatures` for that transaction:
-            - MUST retransmit `channel_ready` or `splice_locked` after exchanging `channel_reestablish`.
-        - if it receives `channel_ready` for that transaction after exchanging `channel_reestablish`:
-          - MUST retransmit `channel_ready` in response, if not already sent since reconnecting.
-        - if it receives `splice_locked` for that transaction after exchanging `channel_reestablish`:
-          - MUST retransmit `splice_locked` in response, if not already sent since reconnecting.
 
 A node:
   - if `next_commitment_number` is 1 in both the `channel_reestablish` it
@@ -3458,9 +3449,6 @@ A receiving node:
     those splice transactions, for which it hasn't received `splice_locked` yet:
     - MUST process `my_current_funding_locked` as if it was receiving `splice_locked`
       for this `txid`.
-  - if `your_last_funding_locked` is set and it does not match the most recent
-    `splice_locked` it has sent:
-    - MUST retransmit `splice_locked`.
 
 A node:
   - MUST NOT assume that previously-transmitted messages were lost,
